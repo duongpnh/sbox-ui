@@ -1,9 +1,12 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, useParams } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 import { Button, Form, Input } from 'antd';
+import { MailOutlined, LockOutlined } from '@ant-design/icons';
+import Link from "next/link";
+import { LocaleTypes } from "@/app/i18n/settings";
 
 const onFinishFailed = (errorInfo: any) => {
   console.log('Failed:', errorInfo);
@@ -25,6 +28,7 @@ export const LoginForm = () => {
 
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/profile";
+  const locale = useParams()?.locale as LocaleTypes;
 
   const onFinish = async (values: FieldType) => {
     try {
@@ -58,35 +62,39 @@ export const LoginForm = () => {
   // };
   return (
     <Form
-      name="basic"
+      name="login-form"
       labelCol={{ span: 8 }}
-      wrapperCol={{ span: 16 }}
       style={{ maxWidth: 600 }}
       initialValues={{ remember: true }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
-      <Form.Item<FieldType>
-        label="Email"
+      <Form.Item
         name="email"
-        rules={[{ required: true, message: 'Please input your email!' }]}
+        rules={[{ required: true, message: 'Please input your Email!' }]}
       >
-        <Input />
+        <Input
+          prefix={<MailOutlined className="site-form-item-icon" />}
+          placeholder="Email"
+        />
       </Form.Item>
-
-      <Form.Item<FieldType>
-        label="Password"
+      <Form.Item
         name="password"
-        rules={[{ required: true, message: 'Please input your password!' }]}
+        rules={[{ required: true, message: 'Please input your Password!' }]}
       >
-        <Input.Password />
+        <Input
+          prefix={<LockOutlined className="site-form-item-icon" />}
+          type="password"
+          placeholder="Password"
+        />
       </Form.Item>
 
-      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Button type="primary" htmlType="submit">
-          Submit
+      <Form.Item>
+        <Button type="primary" htmlType="submit" className="login-form-button">
+          Log in
         </Button>
+        Or <Link href={`/${locale}/register`}>register now!</Link>
       </Form.Item>
     </Form>
   );
