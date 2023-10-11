@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import Header from "@/components/header.component";
+// import Header from "@/app/[lang]/components/Header/HeaderComponent";
 import { authOptions } from "@/lib/auth";
 
 export default async function Profile() {
@@ -8,7 +8,7 @@ export default async function Profile() {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <section className="bg-ct-blue-600  min-h-screen pt-20">
         <div className="max-w-4xl mx-auto bg-ct-dark-100 rounded-md h-[20rem] flex justify-center items-center">
           <div>
