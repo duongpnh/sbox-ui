@@ -1,13 +1,14 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { useSearchParams, useRouter, useParams } from "next/navigation";
 import { ChangeEvent, useState } from "react";
-import { Button, Form, Input } from 'antd';
+import { Alert, Button, Form, Input } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
 import Link from "next/link";
 import { LocaleTypes } from "@/app/i18n/settings";
 import { useTranslation } from "@/app/i18n/client";
+import { signIn } from "next-auth/react";
+import { login } from "@/services/auth/login.service";
 
 const onFinishFailed = (errorInfo: any) => {
   console.log('Failed:', errorInfo);
@@ -21,52 +22,50 @@ type FieldType = {
 export const LoginForm = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [formValues, setFormValues] = useState({
-    email: "",
-    password: "",
-  });
   const [error, setError] = useState("");
 
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/profile";
+  const callbackUrl = "/";
   const locale = useParams()?.locale as LocaleTypes;
   const { t } = useTranslation(locale, 'common');
 
   const onFinish = async (values: FieldType) => {
     try {
       setLoading(true);
-      setFormValues({ email: "", password: "" });
 
-      const res = await signIn("credentials", {
-        redirect: false,
-        email: values.email,
-        password: values.password,
-        callbackUrl,
-      });
+      // const res = await signIn("credentials", {
+      //   redirect: false,
+      //   email: values.email,
+      //   password: values.password,
+      //   callbackUrl,
+      // });
+      const res = await login(
+        locale,
+        values.email as string,
+        values.password as string,
+      );
 
       setLoading(false);
 
       console.log(res);
-      if (!res?.error) {
+      if (!res?.status) {
         router.push(callbackUrl);
       } else {
-        setError("invalid email or password");
+        setError("Invalid email or password");
       }
-    } catch (error: any) {
+    } catch (e: any) {
+      const error = JSON.parse(e?.message || '{}');
+      console.log(
+        '🚀 ~ file: form.tsx:52 ~ onFinish ~ error:',
+        error.data.message,
+      );
       setLoading(false);
-      setError(error);
+      setError(error.data.message);
     }
   };
 
-  // const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = event.target;
-  //   setFormValues({ ...formValues, [name]: value });
-  // };
   return (
     <div>
-      <h1 style={{ textAlign: 'center' }}>
-        <Link href={`/${locale}`}>{t('menu.login')}</Link>
-      </h1>
+      <h1 className="form-title">{t('menu.login')}</h1>
       <Form
         title="Login"
         name="login-form"
@@ -98,11 +97,22 @@ export const LoginForm = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" className="login-form-button">
+          <Button
+            type="primary"
+            htmlType="submit"
+            className="login-form-button"
+            style={{ width: '100%' }}
+          >
             Log in
           </Button>
-          Or <Link href={`/${locale}/register`}>register now!</Link>
+          <span
+            style={{ textAlign: 'center', width: '100%', marginTop: '1rem' }}
+          >
+            You do not have an account.&nbsp;
+            <Link href={`/${locale}/register`}>Register now!</Link>
+          </span>
         </Form.Item>
+        {error && <Alert message={error} type="error" closable />}
       </Form>
     </div>
   );

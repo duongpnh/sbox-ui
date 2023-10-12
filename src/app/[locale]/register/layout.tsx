@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './styles.css';
+import { Row, Col } from 'antd';
 
 export const metadata: Metadata = {
   title: 'Register',
@@ -19,8 +20,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className='auth-layout'>
-      {children}
-    </section>
+    <main>
+      <Row className="auth-layout">
+        <Col span={12} className="auth-left-layout">
+          <span>Sparrow Box</span>
+        </Col>
+        <Col span={12} className="auth-right-layout">
+          {children}
+        </Col>
+      </Row>
+    </main>
   );
 }

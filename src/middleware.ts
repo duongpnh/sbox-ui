@@ -24,12 +24,9 @@ export function middleware(request: NextRequest) {
       new URL(`/${fallbackLng}${pathname}`, request.url),
     );
   }
-
-  return NextResponse.next()
 }
 
 export const config = {
-  // matcher: ["/profile"],
   // matcher: ["/((?!register|api|login).*)"],
-  matcher: ['/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js).*)']
+  matcher: ['/((?![a-z]{2}-[A-Z]{2}/api|[a-z]{2}/api|_next/static|_next/image|assets|favicon.ico|sw.js).*)']
 };

@@ -10,4 +10,29 @@
   background: #f3f7fb;
 }
 
+.auth-left-layout {
+  height: 100%;
+  background: #320D6D;
+  color: #f1f2f3;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
 
+.auth-right-layout {
+  height: 100%;
+  background: #fff;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-left-layout span {
+  font-size: 3rem;
+}
+
+.form-title {
+  margin-bottom: 1rem;
+  font-weight: 700;
+  text-align: center;
+}

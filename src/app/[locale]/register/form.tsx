@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { LocaleTypes } from "@/app/i18n/settings";
-import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Form, Input } from "antd";
-import { signIn } from "next-auth/react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
-import { ChangeEvent, useState } from "react";
-import { RegisterPayload } from "./types/register";
-import { useTranslation } from "@/app/i18n/client";
+import { LocaleTypes } from '@/app/i18n/settings';
+import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Form, Input } from 'antd';
+import { signIn } from 'next-auth/react';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { ChangeEvent, useState } from 'react';
+import { RegisterPayload } from './types/register';
+import { useTranslation } from '@/app/i18n/client';
 
 const defaultPayload: RegisterPayload = {
   firstName: '',
@@ -20,46 +20,45 @@ const defaultPayload: RegisterPayload = {
 export const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
   const [formValues, setFormValues] = useState(defaultPayload);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const locale = useParams()?.locale as LocaleTypes;
-  const { t } = useTranslation(locale, 'common')
+  const { t } = useTranslation(locale, 'common');
 
   const onFinish = async (values: RegisterPayload) => {
     setLoading(true);
     setFormValues(defaultPayload);
-    console.log({ values })
-    // try {
-    //   const res = await fetch('/api/register', {
-    //     method: 'POST',
-    //     body: JSON.stringify(values),
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //   });
+    console.log({ values });
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        body: JSON.stringify(values),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log("🚀 ~ file: form.tsx:39 ~ onFinish ~ res:", res)
 
-    //   setLoading(false);
-    //   if (!res.ok) {
-    //     setError((await res.json()).message);
-    //     return;
-    //   }
+      setLoading(false);
+      // if (!res.ok) {
+      //   setError((await res.json()).message);
+      //   return;
+      // }
 
-    //   signIn(undefined, { callbackUrl: '/' });
-    // } catch (error: any) {
-    //   setLoading(false);
-    //   setError(error);
-    // }
+      // signIn(undefined, { callbackUrl: '/' });
+    } catch (error: any) {
+      console.log("🚀 ~ file: form.tsx:48 ~ onFinish ~ error:", error)
+      setLoading(false);
+      setError(error);
+    }
   };
 
   const onFinishFailed = (e: any) => {
     console.log({ e });
-  }
+  };
 
-  
   return (
     <div>
-      <h1 style={{ textAlign: 'center' }}>
-        <Link href={`/${locale}`}>{t('menu.register')}</Link>
-      </h1>
+      <h1 className="form-title">{t('menu.register')}</h1>
       <Form
         name="register-form"
         labelCol={{ span: 8 }}
@@ -69,32 +68,6 @@ export const RegisterForm = () => {
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
-        <Form.Item style={{ marginBottom: 0 }}>
-          <Form.Item
-            name="firstName"
-            rules={[{ required: true }]}
-            style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}
-          >
-            <Input
-              prefix={<UserOutlined className="site-form-item-icon" />}
-              placeholder="First Name"
-            />
-          </Form.Item>
-          <Form.Item
-            name="lastName"
-            rules={[{ required: true }]}
-            style={{
-              display: 'inline-block',
-              width: 'calc(50% - 8px)',
-              margin: '0 8px',
-            }}
-          >
-            <Input
-              prefix={<UserOutlined className="site-form-item-icon" />}
-              placeholder="Last Name"
-            />
-          </Form.Item>
-        </Form.Item>
         <Form.Item
           name="email"
           rules={[{ required: true, message: 'Please input your Email!' }]}
@@ -116,11 +89,17 @@ export const RegisterForm = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" className="login-form-button">
+          <Button
+            type="primary"
+            htmlType="submit"
+            className="login-form-button"
+          >
             Register
           </Button>
-          You have an account. <Link href={`/${locale}/login`}>Login now!</Link>
         </Form.Item>
+        <span style={{ textAlign: 'center', width: '100%', marginTop: '1rem' }}>
+          You have an account. <Link href={`/${locale}/login`}>Login now!</Link>
+        </span>
       </Form>
     </div>
   );
