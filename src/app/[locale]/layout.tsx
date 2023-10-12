@@ -1,8 +1,9 @@
 import './globals.css';
 import { NextAuthProvider } from './providers';
-import Header from './components/Header';
 import type { Metadata } from 'next';
 import StyledComponentsRegistry from '@/lib/AntdRegistry';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 export const metadata: Metadata = {
   title: 'Sparrow Box',
@@ -11,19 +12,21 @@ export const metadata: Metadata = {
 
 const languages = ['en', 'ar'];
 
-export async function generateStaticParams() {
+export function generateStaticParams() {
   return languages.map((lng) => ({ lng }));
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html>
       <body>
-        <NextAuthProvider>
+        <NextAuthProvider session={session}>
           <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
         </NextAuthProvider>
       </body>

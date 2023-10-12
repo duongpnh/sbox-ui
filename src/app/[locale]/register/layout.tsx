@@ -2,9 +2,10 @@ import type { Metadata } from 'next';
 import './styles.css';
 
 export const metadata: Metadata = {
-  title: 'Sign In',
+  title: 'Register',
   description: '',
 };
+
 
 const languages = ['en', 'ar'];
 
