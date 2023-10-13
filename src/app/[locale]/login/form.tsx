@@ -7,7 +7,7 @@ import { MailOutlined, LockOutlined } from '@ant-design/icons';
 import Link from "next/link";
 import { LocaleTypes } from "@/app/i18n/settings";
 import { useTranslation } from "@/app/i18n/client";
-import { signIn } from "next-auth/react";
+import { attachTokenToCookie } from "@/lib/auth";
 import { login } from "@/services/auth/login.service";
 
 const onFinishFailed = (errorInfo: any) => {
@@ -32,12 +32,6 @@ export const LoginForm = () => {
     try {
       setLoading(true);
 
-      // const res = await signIn("credentials", {
-      //   redirect: false,
-      //   email: values.email,
-      //   password: values.password,
-      //   callbackUrl,
-      // });
       const res = await login(
         locale,
         values.email as string,
@@ -49,6 +43,7 @@ export const LoginForm = () => {
       console.log(res);
       if (!res?.status) {
         router.push(callbackUrl);
+        await attachTokenToCookie(res);
       } else {
         setError("Invalid email or password");
       }
@@ -112,7 +107,7 @@ export const LoginForm = () => {
             <Link href={`/${locale}/register`}>Register now!</Link>
           </span>
         </Form.Item>
-        {error && <Alert message={error} type="error" closable />}
+        {error && <Alert message={error} type="error" />}
       </Form>
     </div>
   );

@@ -3,9 +3,8 @@
 import { LocaleTypes } from '@/app/i18n/settings';
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input } from 'antd';
-import { signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { ChangeEvent, useState } from 'react';
 import { RegisterPayload } from './types/register';
 import { useTranslation } from '@/app/i18n/client';
@@ -23,6 +22,7 @@ export const RegisterForm = () => {
   const [error, setError] = useState('');
   const locale = useParams()?.locale as LocaleTypes;
   const { t } = useTranslation(locale, 'common');
+  const router = useRouter();
 
   const onFinish = async (values: RegisterPayload) => {
     setLoading(true);
@@ -39,12 +39,12 @@ export const RegisterForm = () => {
       console.log("🚀 ~ file: form.tsx:39 ~ onFinish ~ res:", res)
 
       setLoading(false);
-      // if (!res.ok) {
-      //   setError((await res.json()).message);
-      //   return;
-      // }
+      if (!res.ok) {
+        setError((await res.json()).message);
+        return;
+      }
 
-      // signIn(undefined, { callbackUrl: '/' });
+      router.push(`/${locale}/login`)
     } catch (error: any) {
       console.log("🚀 ~ file: form.tsx:48 ~ onFinish ~ error:", error)
       setLoading(false);

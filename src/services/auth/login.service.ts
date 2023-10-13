@@ -1,6 +1,6 @@
 export const login = async (locale: string, email: string, password: string) => {
   try {
-    const url = `/${locale}/api/login`;
+    const url = `${process.env.DOMAIN_SERVER}/v1/auth/login`;
     const result = await fetch(url, {
         method: 'POST',
         headers: {

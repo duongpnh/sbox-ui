@@ -1,9 +1,11 @@
 "use client"
 
-import { UploadOutlined, UserOutlined } from "@ant-design/icons";
+import { UserOutlined, UsergroupAddOutlined } from "@ant-design/icons";
 import { Menu, Layout } from "antd";
 import './styles.css';
-import { Dispatch, SetStateAction } from "react";
+import { useParams } from "next/navigation";
+import { LocaleTypes } from "@/app/i18n/settings";
+import { useTranslation } from "@/app/i18n/client";
 
 const { Sider } = Layout;
 
@@ -12,6 +14,8 @@ interface IPropsSidebar {
 }
 
 const Sidebar = ({ collapsed }: IPropsSidebar) => {
+  const locale = useParams()?.locale as LocaleTypes;
+  const { t } = useTranslation(locale, 'sidebar');
   return (
     <Sider trigger={null} collapsible collapsed={collapsed}>
       <div className="logo" />
@@ -22,13 +26,13 @@ const Sidebar = ({ collapsed }: IPropsSidebar) => {
         items={[
           {
             key: '1',
-            icon: <UserOutlined />,
-            label: 'nav 1',
+            icon: <UsergroupAddOutlined />,
+            label: t('tenants'),
           },
           {
             key: '2',
-            icon: <UploadOutlined />,
-            label: 'nav 2',
+            icon: <UserOutlined />,
+            label: t('users'),
           },
         ]}
       />
