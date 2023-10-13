@@ -20,9 +20,13 @@ export default async function RootLayout({
 }) {
   return (
     <main>
-      <Row className='auth-layout'>
-        <Col span={12} className="auth-left-layout"><span>Sparrow Box</span></Col>
-        <Col span={12} className="auth-right-layout">{children}</Col>
+      <Row className="auth-layout">
+        <Col span={12} className="auth-left-layout">
+          <span>Sparrow Box</span>
+        </Col>
+        <Col span={12} className="auth-right-layout">
+          {children}
+        </Col>
       </Row>
     </main>
   );

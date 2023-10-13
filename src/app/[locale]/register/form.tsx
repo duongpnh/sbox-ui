@@ -1,13 +1,15 @@
 'use client';
 
-import { LocaleTypes } from '@/app/i18n/settings';
-import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
+import { useRouter, useParams } from 'next/navigation';
+import { useState } from 'react';
 import { Button, Form, Input } from 'antd';
+import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
-import { ChangeEvent, useState } from 'react';
+import { LocaleTypes } from '@/app/i18n/settings';
 import { RegisterPayload } from './types/register';
 import { useTranslation } from '@/app/i18n/client';
+import { Metadata } from 'next';
+import { useTranslations } from 'next-intl';
 
 const defaultPayload: RegisterPayload = {
   firstName: '',
@@ -16,13 +18,17 @@ const defaultPayload: RegisterPayload = {
   password: '',
 };
 
+export const metadata: Metadata = {
+  title: 'Register'
+}
+
 export const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
   const [formValues, setFormValues] = useState(defaultPayload);
   const [error, setError] = useState('');
   const locale = useParams()?.locale as LocaleTypes;
-  const { t } = useTranslation(locale, 'common');
   const router = useRouter();
+  const t = useTranslations('register');
 
   const onFinish = async (values: RegisterPayload) => {
     setLoading(true);
@@ -36,7 +42,7 @@ export const RegisterForm = () => {
           'Content-Type': 'application/json',
         },
       });
-      console.log("🚀 ~ file: form.tsx:39 ~ onFinish ~ res:", res)
+      console.log('🚀 ~ file: form.tsx:39 ~ onFinish ~ res:', res);
 
       setLoading(false);
       if (!res.ok) {
@@ -44,9 +50,9 @@ export const RegisterForm = () => {
         return;
       }
 
-      router.push(`/${locale}/login`)
+      router.push(`/${locale}/login`);
     } catch (error: any) {
-      console.log("🚀 ~ file: form.tsx:48 ~ onFinish ~ error:", error)
+      console.log('🚀 ~ file: form.tsx:48 ~ onFinish ~ error:', error);
       setLoading(false);
       setError(error);
     }
@@ -57,8 +63,8 @@ export const RegisterForm = () => {
   };
 
   return (
-    <div>
-      <h1 className="form-title">{t('menu.register')}</h1>
+    <div style={{ width: 300 }}>
+      <h1 className="form-title">{t('title')}</h1>
       <Form
         name="register-form"
         labelCol={{ span: 8 }}
@@ -74,7 +80,7 @@ export const RegisterForm = () => {
         >
           <Input
             prefix={<MailOutlined className="site-form-item-icon" />}
-            placeholder="Email"
+            placeholder={t('email')}
           />
         </Form.Item>
         <Form.Item
@@ -84,7 +90,7 @@ export const RegisterForm = () => {
           <Input
             prefix={<LockOutlined className="site-form-item-icon" />}
             type="password"
-            placeholder="Password"
+            placeholder={t('password')}
           />
         </Form.Item>
 
@@ -92,9 +98,10 @@ export const RegisterForm = () => {
           <Button
             type="primary"
             htmlType="submit"
-            className="login-form-button"
+            className="register-form-button"
+            style={{ width: '100%' }}
           >
-            Register
+            {t('submit')}
           </Button>
         </Form.Item>
         <span style={{ textAlign: 'center', width: '100%', marginTop: '1rem' }}>

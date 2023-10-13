@@ -1,14 +1,13 @@
-"use client";
+'use client';
 
-import { useSearchParams, useRouter, useParams } from "next/navigation";
-import { ChangeEvent, useState } from "react";
+import { useRouter, useParams } from 'next/navigation';
+import { useState } from 'react';
 import { Alert, Button, Form, Input } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
-import Link from "next/link";
-import { LocaleTypes } from "@/app/i18n/settings";
-import { useTranslation } from "@/app/i18n/client";
-import { attachTokenToCookie } from "@/lib/auth";
-import { login } from "@/services/auth/login.service";
+import Link from 'next/link';
+import { signIn } from 'next-auth/react';
+import { LocaleTypes } from '@/app/i18n/settings';
+import { useTranslations } from 'next-intl';
 
 const onFinishFailed = (errorInfo: any) => {
   console.log('Failed:', errorInfo);
@@ -22,31 +21,42 @@ type FieldType = {
 export const LoginForm = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
+  const t = useTranslations('login');
 
-  const callbackUrl = "/";
+  const callbackUrl = '/';
   const locale = useParams()?.locale as LocaleTypes;
-  const { t } = useTranslation(locale, 'common');
 
   const onFinish = async (values: FieldType) => {
     try {
       setLoading(true);
 
-      const res = await login(
-        locale,
-        values.email as string,
-        values.password as string,
-      );
+      // const res = await login(
+      //   locale,
+      //   values.email as string,
+      //   values.password as string,
+      // );
+      signIn('credentials', {
+        email: values.email,
+        password: values.password,
+        redirect: false,
+      }).then((result) => {
+        if (result?.error) {
+          setError(result.error);
+        } else {
+          router.push('/' + locale);
+        }
+      });
 
       setLoading(false);
 
-      console.log(res);
-      if (!res?.status) {
-        router.push(callbackUrl);
-        await attachTokenToCookie(res);
-      } else {
-        setError("Invalid email or password");
-      }
+      // console.log(res);
+      // if (!res?.status) {
+      //   router.push(callbackUrl);
+      //   await attachTokenToCookie(res);
+      // } else {
+      //   setError("Invalid email or password");
+      // }
     } catch (e: any) {
       const error = JSON.parse(e?.message || '{}');
       console.log(
@@ -59,8 +69,8 @@ export const LoginForm = () => {
   };
 
   return (
-    <div>
-      <h1 className="form-title">{t('menu.login')}</h1>
+    <div style={{ width: 300 }}>
+      <h1 className="form-title">{t('title')}</h1>
       <Form
         title="Login"
         name="login-form"
@@ -77,7 +87,7 @@ export const LoginForm = () => {
         >
           <Input
             prefix={<MailOutlined className="site-form-item-icon" />}
-            placeholder="Email"
+            placeholder={t('email')}
           />
         </Form.Item>
         <Form.Item
@@ -87,7 +97,7 @@ export const LoginForm = () => {
           <Input
             prefix={<LockOutlined className="site-form-item-icon" />}
             type="password"
-            placeholder="Password"
+            placeholder={t('password')}
           />
         </Form.Item>
 
@@ -98,7 +108,7 @@ export const LoginForm = () => {
             className="login-form-button"
             style={{ width: '100%' }}
           >
-            Log in
+            {t('submit')}
           </Button>
           <span
             style={{ textAlign: 'center', width: '100%', marginTop: '1rem' }}

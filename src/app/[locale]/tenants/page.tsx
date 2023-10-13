@@ -1,7 +1,13 @@
 import { getServerSession } from 'next-auth';
-import Index from './Index';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import LayoutComponent from '@/app/components/Layout';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Tenant managements',
+  description: '...',
+};
 
 export default async function IndexPage() {
   const session = await getServerSession(authOptions);
@@ -10,5 +16,9 @@ export default async function IndexPage() {
     redirect('/login');
   }
 
-  return <Index />;
+  return (
+    <LayoutComponent>
+      <h1>Tenants working</h1>
+    </LayoutComponent>
+  );
 }

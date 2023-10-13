@@ -3,9 +3,9 @@
 import { UserOutlined, UsergroupAddOutlined } from "@ant-design/icons";
 import { Menu, Layout } from "antd";
 import './styles.css';
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { LocaleTypes } from "@/app/i18n/settings";
-import { useTranslation } from "@/app/i18n/client";
+import { useTranslations } from "next-intl";
 
 const { Sider } = Layout;
 
@@ -14,30 +14,37 @@ interface IPropsSidebar {
 }
 
 const Sidebar = ({ collapsed }: IPropsSidebar) => {
+  const t = useTranslations('sidebar');
+  const router = useRouter();
   const locale = useParams()?.locale as LocaleTypes;
-  const { t } = useTranslation(locale, 'sidebar');
+
+  const onClickSidebarItem = (item: Record<string, any>) => {
+    router.push(item.key);
+  };
+
   return (
     <Sider trigger={null} collapsible collapsed={collapsed}>
       <div className="logo" />
       <Menu
         theme="dark"
         mode="inline"
+        onClick={onClickSidebarItem}
         defaultSelectedKeys={['1']}
         items={[
           {
-            key: '1',
+            key: `/${locale}/tenants`,
             icon: <UsergroupAddOutlined />,
             label: t('tenants'),
           },
           {
-            key: '2',
+            key: `/${locale}/users`,
             icon: <UserOutlined />,
             label: t('users'),
           },
         ]}
       />
     </Sider>
-  )
+  );
 };
 
 export default Sidebar;

@@ -1,32 +1,44 @@
-export { default } from "next-auth/middleware";
-import { fallbackLng, locales, cookieName } from './app/i18n/settings'
-import { NextRequest, NextResponse } from "next/server";
+import {NextRequest} from 'next/server';
+import {withAuth} from 'next-auth/middleware';
+import createIntlMiddleware from 'next-intl/middleware';
+import { publicRoutes } from './routes/public.route';
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+const locales = ['en', 'ar'];
+const intlMiddleware = createIntlMiddleware({
+  locales,
+  defaultLocale: 'en'
+});
 
-  if (pathname.startsWith(`/${fallbackLng}`) || pathname === `/${fallbackLng}`) {
-    return NextResponse.redirect(
-      new URL(
-        pathname.replace(`/${fallbackLng}`,
-          pathname === `/${fallbackLng}` ? '/' : ''
-        ),
-        request.url,
-      ),
-    );
+const authMiddleware = withAuth(
+  // Note that this callback is only invoked if
+  // the `authorized` callback has returned `true`
+  // and not for pages listed in `pages`.
+  (req) => intlMiddleware(req),
+  {
+    callbacks: {
+      authorized: ({token}) => token != null
+    },
+    pages: {
+      signIn: '/login'
+    }
   }
+);
 
-  const pathnameIsMissingLocale = locales.every(locale => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`)
+export default function middleware(req: NextRequest) {
+  const publicPathnameRegex = RegExp(
+    `^(/(${locales.join('|')}))?(${publicRoutes.join('|')})?/?$`,
+    'i'
+  );
+  const isPublicPage = publicPathnameRegex.test(req.nextUrl.pathname);
 
-  if (pathnameIsMissingLocale) {
-
-    return NextResponse.rewrite(
-      new URL(`/${fallbackLng}${pathname}`, request.url),
-    );
+  if (isPublicPage) {
+    return intlMiddleware(req);
+  } else {
+    return (authMiddleware as any)(req);
   }
 }
 
 export const config = {
-  // matcher: ["/((?!register|api|login).*)"],
-  matcher: ['/((?![a-z]{2}-[A-Z]{2}/api|[a-z]{2}/api|_next/static|_next/image|assets|favicon.ico|sw.js).*)']
+  // Skip all paths that should not be internationalized
+  matcher: ['/((?!api|_next|.*\\..*).*)']
 };

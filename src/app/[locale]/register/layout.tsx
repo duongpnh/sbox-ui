@@ -7,7 +7,6 @@ export const metadata: Metadata = {
   description: '',
 };
 
-
 const languages = ['en', 'ar'];
 
 export async function generateStaticParams() {

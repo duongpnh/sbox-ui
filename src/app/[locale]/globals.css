@@ -4,10 +4,6 @@ html {
   font-family: 'Poppins', sans-serif;
 }
 
-* {
-  margin: 0;
-}
-
 .trigger {
   padding: 0 24px;
   font-size: 18px;
@@ -28,8 +24,4 @@ html {
 
 .site-layout .site-layout-background {
   background: #fff;
-}
-
-.layout {
-  height: 100vh;
 }

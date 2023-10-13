@@ -1,34 +1,35 @@
-import './globals.css';
-import { NextAuthProvider } from './providers';
-import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { NextIntlClientProvider } from 'next-intl';
+import { ReactNode } from 'react';
 import StyledComponentsRegistry from '@/lib/AntdRegistry';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 
-export const metadata: Metadata = {
-  title: 'Sparrow Box',
-  description: '',
+type Props = {
+  children: ReactNode;
+  params: { locale: string };
 };
 
-const languages = ['en', 'ar'];
-
-export function generateStaticParams() {
-  return languages.map((lng) => ({ lng }));
-}
-
-export default async function RootLayout({
+export default async function LocaleLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
-  const session = await getServerSession(authOptions);
+  params: { locale },
+}: Props) {
+  let messages;
+  try {
+    messages = (await import(`../../../messages/${locale}.json`)).default;
+  } catch (error) {
+    notFound();
+  }
 
   return (
-    <html>
+    <html lang={locale}>
+      <head>
+        <title>next-intl & next-auth</title>
+      </head>
       <body>
-        <NextAuthProvider session={session}>
-          <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
-        </NextAuthProvider>
+        <StyledComponentsRegistry>
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            {children}
+          </NextIntlClientProvider>
+        </StyledComponentsRegistry>
       </body>
     </html>
   );
